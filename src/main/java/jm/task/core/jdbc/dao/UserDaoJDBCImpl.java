@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    Connection connection = Util.getConnection();
+    private Connection connection = Util.getConnection();
 
     public UserDaoJDBCImpl() {
     }
 
     public void createUsersTable() {
-        try (Statement statement = Util.getConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS userssql " +
                     "(id BIGINT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(255), lastname VARCHAR(255), age INT)");
@@ -24,7 +24,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Statement statement = Util.getConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             statement.executeUpdate("DROP TABLE IF EXISTS userssql;");
             connection.commit();
@@ -59,10 +59,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String command = "SELECT id, name, lastName, age FROM userssql";
-        try (Connection conn = Util.getConnection(); Statement statement = conn.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
-            ResultSet resultSet = statement.executeQuery(command);
+            ResultSet resultSet = statement.executeQuery("SELECT id, name, lastName, age FROM userssql");
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("id"));
